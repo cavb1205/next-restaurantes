@@ -1,10 +1,11 @@
 import Image from "next/image";
 
+
 import { getNegocio } from "../../services/negocio";
 
 import ProductoList from "@/components/productos/ProductoList";
 import { Suspense } from "react";
-
+import WhatsApp from "@/components/WhatsApp";
 export default async function RestauranteDetalle({ params }) {
   const { slug } = params;
 
@@ -46,7 +47,11 @@ export default async function RestauranteDetalle({ params }) {
               Cerrado
             </span>
           )}
+          <div className="flex flex-row gap-2">
+            <p className="text-white text-sm md:text-base">Whatsapp</p>
+          </div>
         </div>
+        
       </div>
 
       {/* Contenido Principal */}
@@ -55,7 +60,7 @@ export default async function RestauranteDetalle({ params }) {
           {negocio.descripcion}
         </p>
         <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="flex flex-col rounded-lg bg-white shadow-md p-2">
               <h2 className="text-base md:text-lg font-semibold text-primary">
                 Horarios
@@ -72,14 +77,14 @@ export default async function RestauranteDetalle({ params }) {
                 {negocio.direccion ? negocio.direccion : "No disponible"}
               </p>
             </div>
-            <div className="flex flex-col rounded-lg bg-white shadow-md p-2 items-center justify-center">
+            {/* <div className="flex flex-col rounded-lg bg-white shadow-md p-2 items-center justify-center">
               <h2 className="text-base md:text-lg font-semibold text-primary">
                 Teléfono
               </h2>
               <p className="text-sm md:text-base text-secondary">
                 {negocio.telefono ? negocio.telefono : "No disponible"}
               </p>
-            </div>
+            </div> */}
             <div className="flex flex-col rounded-lg bg-white shadow-md p-2 items-start md:items-center  justify-start md:justify-center">
               <h2 className="text-base md:text-lg font-semibold text-primary">
                 Envíos
@@ -116,6 +121,7 @@ export default async function RestauranteDetalle({ params }) {
           <ProductoList negocioId={negocio.id} />
         </Suspense>
       </div>
+      <WhatsApp negocio={negocio} />
     </div>
   );
 }

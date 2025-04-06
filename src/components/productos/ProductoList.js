@@ -4,7 +4,7 @@ import SinProductos from "./SinProductos";
 import ErrorProductos from "./ErrorProductos";
 export default async function ProductoList({ negocioId }) {
   let productos = await getProductos(negocioId);
-
+  console.log(productos);
   if (productos == null) {
     return <ErrorProductos />;
   }
@@ -32,7 +32,7 @@ export default async function ProductoList({ negocioId }) {
 
             <div className="p-6 flex flex-col flex-1">
               <header className="mb-4">
-                <h3 className="text-xl font-bold text-primary capitalize truncate">
+                <h3 className="text-lg md:text-xl font-bold text-primary capitalize truncate">
                   {producto.nombre}
                 </h3>
                 {producto.descripcion && (
@@ -41,6 +41,11 @@ export default async function ProductoList({ negocioId }) {
                   </p>
                 )}
               </header>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs md:text-sm text-secondary font-semibold capitalize px-2 py-1 rounded-full bg-primary/10">
+                  {producto.categoria?.nombre || "Sin categoría"}
+                </span>
+              </div>
 
               <div className="mt-auto space-y-4">
                 <div className="flex items-center justify-between">

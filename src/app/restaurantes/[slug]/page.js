@@ -10,8 +10,10 @@ import InfoCard from "@/components/negocios/InfoCard";
 import { ClockIcon, MapPinIcon, TruckIcon } from "@heroicons/react/24/outline";
 import Reviews from "@/components/negocios/Reviews";
 import CategoriaFilter from "@/components/productos/CategoriaFilter";
-export default async function RestauranteDetalle({ params }) {
+export default async function RestauranteDetalle({ params, searchParams }) {
   const { slug } = params;
+  const categoria = searchParams.categoria || "todas";
+  console.log("categoria en restaurante detalle", categoria);
 
   let negocio = await getNegocio(slug);
   console.log(negocio);
@@ -97,9 +99,9 @@ export default async function RestauranteDetalle({ params }) {
               content={negocio.horarios || "No especificado"}
             />
             <InfoCard
-              icon={<MapPinIcon className="h-6 w-6 text-primary" />}
+              icon={<MapPinIcon className="h-6 w-6 text-primary capitalize" />}
               title="Ubicación"
-              content={negocio.ubicacion || "No especificado"}
+              content={negocio.direccion || "No especificado"}
             />
 
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -143,7 +145,7 @@ export default async function RestauranteDetalle({ params }) {
           categorias={categorias}
         />
         <Suspense fallback={<div>Cargando productos...</div>}>
-          <ProductoList negocioId={negocio.id} />
+          <ProductoList negocioId={negocio.id} categoria={categoria} />
         </Suspense>
       </div>
       <WhatsApp negocio={negocio} />

@@ -17,7 +17,7 @@ export default function SinProductos() {
           </svg>
           <h3 className="text-xl font-semibold text-primary">Menú vacío</h3>
           <p className="text-secondary/80 max-w-md text-center text-sm md:text-base">
-            Actualmente no hay productos disponibles en este establecimiento
+            Actualmente no hay productos disponibles en esta categoria o establecimiento.
           </p>
         </div>
   );

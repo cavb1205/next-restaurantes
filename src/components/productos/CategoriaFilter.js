@@ -36,11 +36,11 @@ export default function CategoriaFilter({ categorias }) {
       {/* Versión móvil */}
       <div className="sm:hidden overflow-x-auto pb-2">
         <div className="flex space-x-2 min-w-max px-2">
-          {categoriasNormalizadas.map((categoria) => (
+          {categoriasNormalizadas.sort((a, b) => a.nombre.localeCompare(b.nombre)).map((categoria) => (
             <button
               key={categoria.slug}
               onClick={() => handleCategoriaChange(categoria)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
+              className={`px-4 capitalize py-2 rounded-full text-sm font-medium whitespace-nowrap ${
                 currentCategoria === categoria.slug
                   ? "bg-primary text-white"
                   : "bg-gray-100 text-secondary hover:bg-gray-200"
@@ -55,11 +55,11 @@ export default function CategoriaFilter({ categorias }) {
 
       {/* Versión desktop */}
       <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-        {categoriasNormalizadas.map((categoria) => (
+        {categoriasNormalizadas.sort((a, b) => a.nombre.localeCompare(b.nombre)).map((categoria) => (
           <button
             key={categoria.slug}
             onClick={() => handleCategoriaChange(categoria)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium ${
+            className={`px-4 py-2 capitalize rounded-lg text-sm font-medium ${
               currentCategoria === categoria.slug
                 ? "bg-primary text-white"
                 : "bg-gray-100 text-secondary hover:bg-gray-200"

@@ -2,18 +2,22 @@ import { getProductos } from "@/app/services/productos";
 import Image from "next/image";
 import SinProductos from "./SinProductos";
 import ErrorProductos from "./ErrorProductos";
-export default async function ProductoList({ negocioId }) {
+export default async function ProductoList({ negocioId, categoria }) {
   let productos = await getProductos(negocioId);
-  console.log(productos);
+  console.log("categoria en producto list", categoria);
+  console.log("productos", productos);
   if (productos == null) {
     return <ErrorProductos />;
+  }
+  if (categoria !== "todas") {
+    productos = productos.filter((producto) => producto.categoria?.slug === categoria);
   }
   if (productos.length === 0) {
     return <SinProductos />;
   }
   return (
     <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-2 md:p-4">
-      {productos.map((producto) => (
+      {productos.sort((a, b) => a.nombre.localeCompare(b.nombre)).map((producto) => (
         <article
           key={producto.id}
           className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-out overflow-hidden ring-1 ring-gray-100/10 hover:ring-primary/20"

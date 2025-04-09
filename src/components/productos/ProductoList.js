@@ -2,6 +2,8 @@ import { getProductos } from "@/app/services/productos";
 import Image from "next/image";
 import SinProductos from "./SinProductos";
 import ErrorProductos from "./ErrorProductos";
+import AddToCartButton from "./AddToCartButton";
+
 export default async function ProductoList({ negocioId, categoria }) {
   let productos = await getProductos(negocioId);
   console.log("categoria en producto list", categoria);
@@ -61,15 +63,7 @@ export default async function ProductoList({ negocioId, categoria }) {
                   </span>
                 </div>
 
-                <button
-                  className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-primary/20"
-                  aria-label={`Agregar ${producto.nombre} al carrito`}
-                >
-                  Agregar
-                  <span className="ml-2" aria-hidden="true">
-                    +
-                  </span>
-                </button>
+                <AddToCartButton product={producto} />
               </div>
             </div>
           </div>

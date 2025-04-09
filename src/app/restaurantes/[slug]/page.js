@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Skeleton from "@/components/ui/Skeleton";
 
 import { getNegocio } from "../../services/negocio";
 import { getCategorias } from "../../services/productos";
@@ -10,7 +11,9 @@ import InfoCard from "@/components/negocios/InfoCard";
 import { ClockIcon, MapPinIcon, TruckIcon } from "@heroicons/react/24/outline";
 import Reviews from "@/components/negocios/Reviews";
 import CategoriaFilter from "@/components/productos/CategoriaFilter";
+import { useCart } from "@/context/CartContext";
 export default async function RestauranteDetalle({ params, searchParams }) {
+  
   const { slug } = params;
   const categoria = searchParams.categoria || "todas";
   console.log("categoria en restaurante detalle", categoria);
@@ -141,10 +144,8 @@ export default async function RestauranteDetalle({ params, searchParams }) {
         <h2 className="text-2xl md:text-3xl font-semibold text-primary mt-8 text-center">
           Productos del restaurante
         </h2>
-        <CategoriaFilter
-          categorias={categorias}
-        />
-        <Suspense fallback={<div>Cargando productos...</div>}>
+        <CategoriaFilter categorias={categorias} />
+        <Suspense fallback={<Skeleton />}>
           <ProductoList negocioId={negocio.id} categoria={categoria} />
         </Suspense>
       </div>

@@ -10,9 +10,9 @@ export default async function Negocios() {
     <div className="min-h-screen p-8">
       <header className="mb-8">
         <h1 className="text-2xl md:text-4xl text-center font-extrabold text-primary mb-6">
-          Restaurantes en Calama
+          Negocios en Rico Calama
         </h1>
-        <p className="text-secondary text-center">
+        <p className="text-secondary text-center text-sm md:text-base">
           Descubre los mejores lugares para comer en la ciudad
         </p>
       </header>
@@ -36,13 +36,19 @@ export default async function Negocios() {
                     alt={negocio.nombre}
                     fill
                     className="object-cover"
+                    priority
                   />
                 </div>
 
                 <div className="p-4">
-                  <h2 className="text-xl font-semibold text-[#b87333] mb-2 capitalize">
-                    {negocio.nombre}
-                  </h2>
+                  <div className="flex flex-row items-center justify-between gap-2">
+                    <h2 className="text-xl font-semibold text-primary mb-2 capitalize">
+                      {negocio.nombre}
+                    </h2>
+                    <span className={`capitalize text-xs font-semibold px-1 py-1 rounded-full text-white ${negocio.activa ? "bg-green-500/80" : "bg-red-500/80"}`}>
+                      {negocio.activa ? "Abierto" : "Cerrado"}
+                    </span>
+                  </div>
                   <p className="text-secondary mb-2 text-sm md:text-base">
                     {negocio.descripcion}
                   </p>

@@ -6,7 +6,7 @@ import CheckoutForm from "@/components/checkout/CheckoutForm";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, clearCart, isClient, negocio } = useCart();
+  const { cart, clearCart } = useCart();
 
   const handleCheckout = async (formData) => {
     try {
@@ -23,9 +23,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (!isClient) {
-    return null; // O un componente de carga
-  }
+  
 
   if (cart.length === 0) {
     return (

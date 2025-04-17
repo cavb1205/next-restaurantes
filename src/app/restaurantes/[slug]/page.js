@@ -13,7 +13,6 @@ import Reviews from "@/components/negocios/Reviews";
 import CategoriaFilter from "@/components/productos/CategoriaFilter";
 import { useCart } from "@/context/CartContext";
 export default async function RestauranteDetalle({ params, searchParams }) {
-  
   const { slug } = params;
   const categoria = searchParams.categoria || "todas";
   console.log("categoria en restaurante detalle", categoria);
@@ -23,16 +22,13 @@ export default async function RestauranteDetalle({ params, searchParams }) {
   if (negocio.error) {
     return <div>No se encontró el restaurante</div>;
   }
-  negocio = negocio[0];
-  let categorias = await getCategorias(negocio.id);
-  console.log(categorias);
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="relative h-96 w-full">
         <Image
-          src={`${process.env.NEXT_PUBLIC_API_URL}${negocio?.logo.url}`}
+          src={`${process.env.API_URL}/${negocio?.logo}`}
           alt={negocio.nombre}
           fill
           className="object-cover brightness-50 object-center"
@@ -44,12 +40,25 @@ export default async function RestauranteDetalle({ params, searchParams }) {
             <h1 className="text-4xl md:text-5xl font-bold mb-4 capitalize">
               {negocio.nombre}
             </h1>
-            <p className="text-lg md:text-xl opacity-90 capitalize">
-              {negocio.categoria || "Restaurante"}
-            </p>
+            {negocio.tipos_cocina.length > 0 ? (
+              <div className="text-xs md:text-md opacity-90 capitalize flex flex-row flex-wrap items-center gap-2 justify-center font-semibold">
+                {negocio.tipos_cocina.map((tipo) => (
+                  <span
+                    key={tipo.id}
+                    className="bg-primary/70 px-2 py-1 rounded-full gap-2"
+                  >
+                    {tipo.nombre}{" "}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className="text-lg md:text-xl opacity-90 capitalize">
+                Restaurante
+              </span>
+            )}
           </div>
 
-          {negocio.activa ? (
+          {negocio.estado === "abierto" ? (
             <span className="bg-green-500 text-white font-semibold px-4 py-1 text-sm rounded-full absolute top-4 right-4">
               Abierto
             </span>
@@ -58,32 +67,18 @@ export default async function RestauranteDetalle({ params, searchParams }) {
               Cerrado
             </span>
           )}
-          {negocio.facebook || negocio.instagram || negocio.tiktok ? (
+          {negocio.redes_sociales.length > 0 ? (
             <div className="flex gap-2 animate-fade-in">
-              {negocio.facebook && (
+              {negocio.redes_sociales.map((red) => (
                 <SocialIcon
-                  href={negocio.facebook}
-                  platform="facebook"
-                  label="Facebook"
-                  className="bg-[#1877F2] hover:bg-[#166FE5]"
+                  key={red.id}
+                  href={red.url}
+                  platform={red.tipo}
+                  label={red.nombre}
+                  className="bg-[#E1306C] hover:bg-[#D81B60]"
                 />
-              )}
-              {negocio.instagram && (
-                <SocialIcon
-                  href={negocio.instagram}
-                  platform="instagram"
-                  label="Instagram"
-                  className="bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#FCB045] hover:opacity-90"
-                />
-              )}
-              {negocio.tiktok && (
-                <SocialIcon
-                  href={negocio.tiktok}
-                  platform="tiktok"
-                  label="TikTok"
-                  className="bg-gray-900 hover:bg-gray-800"
-                />
-              )}
+              ))}
+              )
             </div>
           ) : null}
         </div>
@@ -99,7 +94,10 @@ export default async function RestauranteDetalle({ params, searchParams }) {
             <InfoCard
               icon={<ClockIcon className="h-6 w-6 text-primary" />}
               title="Horarios"
-              content={negocio.horarios || "No especificado"}
+              content={
+                `Apertura ${negocio.hora_apertura} - Cierre ${negocio.hora_cierre}` ||
+                "No especificado"
+              }
             />
             <InfoCard
               icon={<MapPinIcon className="h-6 w-6 text-primary capitalize" />}
@@ -117,14 +115,14 @@ export default async function RestauranteDetalle({ params, searchParams }) {
 
               {negocio.envios?.length > 0 ? (
                 negocio.envios
-                  ?.filter((envio) => envio.estado)
+                  ?.filter((envio) => envio.estado === "activo")
                   .map((envio) => (
                     <div key={envio.id} className="flex flex-row gap-1 w-full">
                       <span className="text-xs md:text-sm text-secondary">
                         {envio.nombre}
                       </span>
                       <span className="text-xs md:text-sm text-primary font-semibold text-right">
-                        {envio.precio === 0 || ""
+                        {envio.precio == 0 || ""
                           ? "Gratuito"
                           : envio.precio.toLocaleString("es-CL", {
                               style: "currency",
@@ -144,9 +142,9 @@ export default async function RestauranteDetalle({ params, searchParams }) {
         <h2 className="text-2xl md:text-3xl font-semibold text-primary mt-8 text-center">
           Productos del restaurante
         </h2>
-        <CategoriaFilter categorias={categorias} />
+        
         <Suspense fallback={<Skeleton />}>
-          <ProductoList negocioId={negocio.id} categoria={categoria} />
+          <ProductoList negocioId={negocio.slug} categoria={categoria} />
         </Suspense>
       </div>
       <WhatsApp negocio={negocio} />

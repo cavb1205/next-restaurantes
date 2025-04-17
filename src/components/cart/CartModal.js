@@ -5,7 +5,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 export default function CartModal({ isOpen, setIsOpen }) {
   const router = useRouter();
   const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } =
@@ -77,10 +77,13 @@ export default function CartModal({ isOpen, setIsOpen }) {
                               {cart.map((product) => (
                                 <li key={product.id} className="flex py-6">
                                   <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                    <img
+                                    <Image
                                       src={`${process.env.NEXT_PUBLIC_API_URL}${product.imagen.url}`}
                                       alt={product.nombre}
                                       className="h-full w-full object-cover object-center"
+                                      width={100}
+                                      height={100}
+                                      loading="lazy"
                                     />
                                   </div>
 

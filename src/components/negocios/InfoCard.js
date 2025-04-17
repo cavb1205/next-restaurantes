@@ -6,7 +6,7 @@ function InfoCard({ icon, title, content }) {
           {icon}
           <h3 className="hidden md:block text-lg font-semibold text-primary">{title}</h3>
         </div>
-        <p className="text-secondary leading-relaxed capitalize">{content}</p>
+        <p className="text-secondary text-sm leading-relaxed capitalize">{content}</p>
       </div>
     );
   }

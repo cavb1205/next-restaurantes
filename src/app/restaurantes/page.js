@@ -32,7 +32,7 @@ export default async function Negocios() {
               <div className="border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                 <div className="relative h-48 w-full">
                   <Image
-                    src={`${process.env.API_URL}${negocio.logo?.url}`}
+                    src={`${process.env.API_URL}/${negocio.logo}`}
                     alt={negocio.nombre}
                     fill
                     className="object-cover"
@@ -45,17 +45,23 @@ export default async function Negocios() {
                     <h2 className="text-xl font-semibold text-primary mb-2 capitalize">
                       {negocio.nombre}
                     </h2>
-                    <span className={`capitalize text-xs font-semibold px-1 py-1 rounded-full text-white ${negocio.activa ? "bg-green-500/80" : "bg-red-500/80"}`}>
-                      {negocio.activa ? "Abierto" : "Cerrado"}
+                    <span
+                      className={`capitalize text-xs font-semibold px-1 py-1 rounded-full text-white ${
+                        negocio.estado === "abierto" ? "bg-green-500/80" : "bg-red-500/80"
+                      }`}
+                    >
+                      {negocio.estado === "abierto" ? "Abierto" : "Cerrado"}
                     </span>
                   </div>
                   <p className="text-secondary mb-2 text-sm md:text-base">
                     {negocio.descripcion}
                   </p>
                   <div>
-                    <span className="text-primary text-sm font-semibold px-2 py-1 bg-primary/10 rounded-full">
-                      {negocio.categoria}
+                  {negocio.tipos_cocina.map((tipo) => 
+                    <span key={tipo.id} className="text-primary text-sm font-semibold px-2 py-1 bg-primary/10 rounded-full mx-1">
+                      {tipo.nombre}
                     </span>
+                    )}
                   </div>
                   <div className="flex justify-center items-center mt-4 text-primary font-semibold">
                     Ver más

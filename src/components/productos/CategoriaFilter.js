@@ -2,8 +2,7 @@
 
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
-export default function CategoriaFilter({categorias}) {
-  console.log("categorias en CategoriaFilter", categorias);
+export default function CategoriaFilter({ categorias }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();

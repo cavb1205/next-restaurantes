@@ -8,8 +8,8 @@ export default function AddToCartButton({ product }) {
   const [isAdding, setIsAdding] = useState(false);
 
   const handleAddToCart = () => {
-    setIsAdding(true);
     addToCart(product);
+    setIsAdding(true);
 
     // Mostrar feedback visual
     setTimeout(() => {

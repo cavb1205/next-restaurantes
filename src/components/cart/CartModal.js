@@ -78,7 +78,7 @@ export default function CartModal({ isOpen, setIsOpen }) {
                                 <li key={product.id} className="flex py-6">
                                   <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                     <Image
-                                      src={`${process.env.NEXT_PUBLIC_API_URL}${product.imagen.url}`}
+                                      src={`${process.env.NEXT_PUBLIC_API_URL}${product.imagen}`}
                                       alt={product.nombre}
                                       className="h-full w-full object-cover object-center"
                                       width={100}
@@ -90,9 +90,12 @@ export default function CartModal({ isOpen, setIsOpen }) {
                                   <div className="ml-4 flex flex-1 flex-col">
                                     <div>
                                       <div className="flex justify-between text-base font-medium text-gray-900">
-                                        <h3 className="capitalize">
-                                          {product.nombre}
-                                        </h3>
+                                        <div className="flex flex-col text-secondary">
+                                          <h3 className="capitalize">
+                                            {product.nombre}
+                                          </h3>
+                                          <span className="text-xs">{(product.precio*1).toLocaleString("es-CL",{style:"currency",currency:"CLP"})}</span>
+                                        </div>
                                         <p className="ml-4 text-primary">
                                           {(
                                             product.precio * product.quantity

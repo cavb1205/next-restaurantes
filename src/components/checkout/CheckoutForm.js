@@ -2,48 +2,37 @@
 
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
-import { getNegocioEnvios } from "@/app/services/negocio";
+import { getNegocioId } from "@/app/services/negocio";
 import { createOrden } from "@/app/services/orden";
 import { useRouter } from "next/navigation";
 
 export default function CheckoutForm({ onSubmit }) {
   const { cart, getCartTotal, clearCart } = useCart();
   const router = useRouter();
-  const negocio = cart[0]?.negocio;
-  const [envios, setEnvios] = useState([]);
-  const [metodoPagos, setMetodoPagos] = useState([]);
+  const negocio = cart[0]?.restaurante;
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [restaurante, setRestaurante] = useState(null);
 
   useEffect(() => {
-    const fetchEnvios = async () => {
-      if (negocio?.id) {
+    const fetchNegocio = async () => {
+      if (negocio) {
         try {
           setIsLoading(true);
-          const response = await getNegocioEnvios(negocio.id);
-          console.log("response", response);
+          const response = await getNegocioId(negocio);
 
-          if (response) {
-            setEnvios(response[0].envios);
-            setMetodoPagos(response[0].metodo_pagos);
-            setIsLoading(false);
-          } else {
-            console.warn("No se encontraron métodos de envío");
-            setEnvios([]);
-            setIsLoading(false);
-          }
-        } catch (error) {
-          console.error("Error al obtener los envíos:", error);
-          setEnvios([]);
+          setRestaurante(response);
           setIsLoading(false);
-        } finally {
+        } catch (error) {
+          setError("Error al cargar la información del negocio.");
           setIsLoading(false);
         }
       }
     };
 
-    fetchEnvios();
+    fetchNegocio();
   }, []);
 
   const [formData, setFormData] = useState({
@@ -52,16 +41,21 @@ export default function CheckoutForm({ onSubmit }) {
     email: "",
     direccion: "",
     referencia: "",
-    metodoPago: "efectivo",
-    metodoEnvio: "",
+    metodoPago: null,
+    metodoEnvio: null,
     notasAdicionales: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      // Usa parseInt() solo si el nombre del campo es metodoEnvio o metodoPago
+      [name]:
+        name === "metodoEnvio" || name === "metodoPago"
+          ? parseInt(value, 10)
+          : value,
     }));
   };
 
@@ -70,57 +64,50 @@ export default function CheckoutForm({ onSubmit }) {
     setIsSubmitting(true);
     setError(null);
 
+    // Asegurar de que los campos requeridos estén llenos (puedes añadir más validación)
+    if (
+      !formData.nombre ||
+      !formData.telefono ||
+      !formData.direccion ||
+      formData.metodoPago === null ||
+      formData.metodoEnvio === null
+    ) {
+      setError(
+        "Por favor, completa todos los campos requeridos (Nombre, Teléfono, Dirección, Método de Pago, Método de Envío)."
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Asegurarse de que haya productos en el carrito
+    if (cart.length === 0) {
+      setError("Tu carrito está vacío.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      let costoEnvio = 0;
-      let envioSeleccionado = null;
-
-      if (formData.metodoEnvio && envios) {
-        envioSeleccionado = envios.find(
-          (envio) => envio.id === parseInt(formData.metodoEnvio)
-        );
-        costoEnvio = envioSeleccionado?.precio || 0;
-      }
-
-      const total = getCartTotal() + costoEnvio;
-
       // Preparar datos para la API
       const ordenData = {
-        cliente: {
-          nombre: formData.nombre,
-          telefono: formData.telefono,
-          email: formData.email,
-        },
-        direccion: formData.direccion,
+        cliente_nombre: formData.nombre, // <-- Añade este mapeo
+        cliente_telefono: formData.telefono, // <-- Añade este mapeo
+        cliente_email: formData.email, // <-- Añade este mapeo
+        direccion_envio: formData.direccion,
         referencia: formData.referencia,
-        metodoPago: formData.metodoPago,
-        metodoEnvio: envioSeleccionado
-          ? {
-              id: envioSeleccionado.id,
-              nombre: envioSeleccionado.nombre,
-              precio: envioSeleccionado.precio,
-            }
-          : null,
+        metodo_pago: formData.metodoPago,
+        envio: formData.metodoEnvio,
         notasAdicionales: formData.notasAdicionales,
-        negocio: {
-          id: negocio.id,
-          nombre: negocio.nombre,
-        },
-        productos: cart.map((item) => ({
-          id: item.id,
-          nombre: item.nombre,
-          precio: item.precio,
+        restaurante: restaurante.id,
+        items: cart.map((item) => ({
+          producto: item.id,
           cantidad: item.quantity,
         })),
-        costoEnvio,
-        subtotal: getCartTotal(),
-        total,
-        estado: "pendiente",
-        fechaCreacion: new Date().toISOString(),
       };
-      console.log(ordenData);
+      
 
       // Enviar a la API
       const response = await createOrden(ordenData);
+      console.log("Respuesta de la API:", response);
 
       if (response.error) {
         throw new Error(response.error);
@@ -132,17 +119,17 @@ export default function CheckoutForm({ onSubmit }) {
       // Redireccionar a la página de confirmación
       router.push(`/confirmacion/${response.id}`);
 
-      // También llamar al onSubmit para compatibilidad
-      if (onSubmit) {
-        onSubmit({
-          ...formData,
-          cart,
-          negocio,
-          costoEnvio,
-          total,
-          ordenId: response.id,
-        });
-      }
+      // // También llamar al onSubmit para compatibilidad
+      // if (onSubmit) {
+      //   onSubmit({
+      //     ...formData,
+      //     cart,
+      //     negocio,
+      //     costoEnvio,
+      //     total,
+      //     ordenId: response.id,
+      //   });
+      // }
     } catch (error) {
       console.error("Error al procesar el pedido:", error);
       setError(
@@ -155,12 +142,12 @@ export default function CheckoutForm({ onSubmit }) {
 
   // Calcular el total incluyendo el envío
   const totalConEnvio = () => {
-    if (!formData.metodoEnvio || !envios) return getCartTotal();
+    if (!formData.metodoEnvio) return getCartTotal();
 
-    const envioSeleccionado = envios.find(
+    const envioSeleccionado = restaurante?.envios.find(
       (envio) => envio.id === parseInt(formData.metodoEnvio)
     );
-    return getCartTotal() + (envioSeleccionado?.precio || 0);
+    return getCartTotal() + parseInt(envioSeleccionado?.precio || 0);
   };
 
   // Si no hay elementos en el carrito, mostrar mensaje
@@ -193,11 +180,11 @@ export default function CheckoutForm({ onSubmit }) {
         <div className="space-y-2">
           <p className="text-secondary capitalize">
             <span className="font-medium">Restaurante:</span>{" "}
-            {negocio?.nombre || "No disponible"}
+            {restaurante?.nombre || "No disponible"}
           </p>
           <p className="text-secondary capitalize">
             <span className="font-medium">Dirección del restaurante:</span>{" "}
-            {negocio?.direccion || "No disponible"}
+            {restaurante?.direccion || "No disponible"}
           </p>
         </div>
       </div>
@@ -285,9 +272,9 @@ export default function CheckoutForm({ onSubmit }) {
                 </div>
               ))}
             </div>
-          ) : envios.length > 0 ? (
-            envios
-              .filter((envio) => envio.estado)
+          ) : restaurante?.envios.length > 0 ? (
+            restaurante.envios
+              .filter((envio) => envio.estado == "activo")
               .map((envio) => (
                 <div
                   key={envio.id}
@@ -297,9 +284,9 @@ export default function CheckoutForm({ onSubmit }) {
                     type="radio"
                     id={`envio-${envio.id}`}
                     name="metodoEnvio"
-                    value={envio.nombre}
+                    value={parseInt(envio.id)}
                     required
-                    checked={formData.metodoEnvio === envio.nombre}
+                    checked={formData.metodoEnvio === envio.id}
                     onChange={handleChange}
                     className="focus:ring-primary h-4 w-4 text-primary border-gray-300"
                   />
@@ -309,7 +296,7 @@ export default function CheckoutForm({ onSubmit }) {
                   >
                     <span>{envio.nombre}</span>
                     <span className="text-primary font-semibold">
-                      {envio.precio === 0
+                      {envio.precio == 0
                         ? "Gratis"
                         : envio.precio.toLocaleString("es-CL", {
                             style: "currency",
@@ -380,26 +367,31 @@ export default function CheckoutForm({ onSubmit }) {
           Método de Pago
         </h2>
         <div className="space-y-4">
-          {metodoPagos.length > 0 ? (
-            metodoPagos.map((metodoPago) => (
-              <div key={metodoPago.id} className="flex items-center space-x-4">
-                <input
-                  type="radio"
-                  id={metodoPago.id}
-                  name="metodoPago"
-                  value={metodoPago.nombre}
-                  checked={formData.metodoPago === metodoPago.nombre}
-                  onChange={handleChange}
-                  className="focus:ring-primary h-4 w-4 text-primary border-gray-300"
-                />
-                <label
-                  htmlFor={metodoPago.id}
-                  className="text-sm font-medium text-secondary"
+          {restaurante?.metodos_pago.length > 0 ? (
+            restaurante.metodos_pago
+              .filter((metodoPago) => metodoPago.activo)
+              .map((metodoPago) => (
+                <div
+                  key={metodoPago.id}
+                  className="flex items-center space-x-4"
                 >
-                  {metodoPago.nombre}
-                </label>
-              </div>
-            ))
+                  <input
+                    type="radio"
+                    id={metodoPago.id}
+                    name="metodoPago"
+                    value={metodoPago.id}
+                    checked={formData.metodoPago === metodoPago.id}
+                    onChange={handleChange}
+                    className="focus:ring-primary h-4 w-4 text-primary border-gray-300"
+                  />
+                  <label
+                    htmlFor={metodoPago.id}
+                    className="text-sm font-medium text-secondary"
+                  >
+                    {metodoPago.tipo}
+                  </label>
+                </div>
+              ))
           ) : (
             <div className="text-center py-4">
               <p className="text-secondary">
@@ -461,14 +453,18 @@ export default function CheckoutForm({ onSubmit }) {
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Envío</span>
               <span className="text-primary font-medium">
-                {(
-                  envios.find(
-                    (envio) => envio.id === parseInt(formData.metodoEnvio)
-                  )?.precio || 0
-                ).toLocaleString("es-CL", {
-                  style: "currency",
-                  currency: "CLP",
-                })}
+                {restaurante.envios.find(
+                  (envio) => envio.id === parseInt(formData.metodoEnvio)
+                )?.precio == 0
+                  ? "Gratis"
+                  : parseInt(
+                      restaurante.envios.find(
+                        (envio) => envio.id === parseInt(formData.metodoEnvio)
+                      )?.precio
+                    ).toLocaleString("es-CL", {
+                      style: "currency",
+                      currency: "CLP",
+                    })}
               </span>
             </div>
           )}

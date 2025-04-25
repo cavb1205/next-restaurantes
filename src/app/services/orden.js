@@ -1,14 +1,13 @@
 export async function createOrden(ordenData) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/ordens`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/ordenes/`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
         },
-        body: JSON.stringify({ data: ordenData }),
+        body: JSON.stringify(ordenData ),
       }
     );
 
@@ -19,7 +18,7 @@ export async function createOrden(ordenData) {
     }
 
     const data = await response.json();
-    return data.data;
+    return data;
   } catch (error) {
     console.error("Error al crear la orden:", error);
     return { error: error.message || "Error al crear la orden" };
@@ -29,11 +28,10 @@ export async function createOrden(ordenData) {
 export async function getOrden(id) {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/ordens/${id}?populate=*`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/ordenes/${id}`,
       {
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-        },
+        method: 'GET',
+       
       }
     );
 
@@ -42,7 +40,7 @@ export async function getOrden(id) {
     }
 
     const data = await response.json();
-    return data.data;
+    return data
   } catch (error) {
     console.error("Error al obtener los datos de la orden:", error);
     return { error: "Error al obtener los datos de la orden" };

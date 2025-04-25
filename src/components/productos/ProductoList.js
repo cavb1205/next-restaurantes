@@ -25,15 +25,15 @@ export default async function ProductoList({ negocioId, categoria = "todas" }) {
   return (
     <>
       <CategoriaFilter categorias={categorias} />
-      <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-2 md:p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-4 md:p-4  w-full">
         {productos
           .sort((a, b) => a.nombre.localeCompare(b.nombre))
           .map((producto) => (
             <article
               key={producto.id}
-              className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-out overflow-hidden ring-1 ring-gray-100/10 hover:ring-primary/20"
+              className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-out overflow-hidden ring-1 ring-gray-100/10 hover:ring-primary/20  "
             >
-              <div className="flex flex-col h-full">
+              <div className="flex flex-col h-full w-full">
                 <div className="relative aspect-square w-full">
                   <Image
                     src={`${process.env.API_URL}${producto.imagen}`}

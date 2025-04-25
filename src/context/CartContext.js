@@ -1,30 +1,27 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { toast } from "sonner";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [isClient, setIsClient] = useState(false);
   const [cart, setCart] = useState([]);
-  const [negocio, setNegocio] = useState(null);
-  
+  const [restaurante, setRestaurante] = useState(null);
+  console.log("valor de negocio en CartProvider", restaurante);
+
   // Solo ejecutar en el cliente
   useEffect(() => {
     setIsClient(true);
     const savedCart = localStorage.getItem("cart");
-    const savedNegocio = localStorage.getItem("negocio");
-    
+    const savedNegocio = localStorage.getItem("restaurante");
+
     if (savedCart) {
       const parsedCart = JSON.parse(savedCart);
       setCart(parsedCart);
+      setRestaurante(parsedCart[0]?.restaurante || null);
       // Si hay items en el carrito, extraer la información del negocio del primer item
-      if (parsedCart.length > 0 && parsedCart[0].negocio) {
-        setNegocio(parsedCart[0].negocio);
-      }
-    }
-    if (savedNegocio) {
-      setNegocio(JSON.parse(savedNegocio));
     }
   }, []);
 
@@ -34,53 +31,45 @@ export function CartProvider({ children }) {
 
     if (cart.length > 0) {
       localStorage.setItem("cart", JSON.stringify(cart));
+      localStorage.setItem("restaurante", cart[0]?.restaurante);
+      setRestaurante(cart[0]?.restaurante);
     } else {
       localStorage.removeItem("cart");
+      localStorage.removeItem("restaurante");
     }
   }, [cart, isClient]);
 
-  // Guardar negocio en localStorage cuando cambie
-  useEffect(() => {
-    if (!isClient) return;
-
-    if (negocio) {
-      localStorage.setItem("negocio", JSON.stringify(negocio));
-    } else {
-      localStorage.removeItem("negocio");
-    }
-  }, [negocio, isClient]);
 
   const addToCart = (product, quantity = 1) => {
-    try {
-      // Si el carrito está vacío o el producto es del mismo negocio
-      if (cart.length === 0 || (negocio && product.negocio.id === negocio.id)) {
-        if (cart.length === 0) {
-          setNegocio(product.negocio);
+    console.log(restaurante);
+    console.log(product);
+    console.log("carrito:", cart);
+    // Si el carrito está vacío o el producto es del mismo negocio
+    if (
+      cart.length === 0 ||
+      (restaurante && product.restaurante === restaurante)
+    ) {
+      if (cart.length === 0) {
+        setRestaurante(product.restaurante);
+      }
+
+      setCart((prevCart) => {
+        const existingProduct = prevCart.find((item) => item.id === product.id);
+
+        if (existingProduct) {
+          return prevCart.map((item) =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + quantity }
+              : item
+          );
         }
 
-        setCart((prevCart) => {
-          const existingProduct = prevCart.find(
-            (item) => item.id === product.id
-          );
-
-          if (existingProduct) {
-            return prevCart.map((item) =>
-              item.id === product.id
-                ? { ...item, quantity: item.quantity + quantity }
-                : item
-            );
-          }
-
-          return [...prevCart, { ...product, quantity }];
-        });
-      } else {
-        throw new Error(
-          "No puedes agregar productos de diferentes negocios al mismo carrito"
-        );
-      }
-    } catch (error) {
-      console.error("Error al agregar al carrito:", error);
-      alert(error.message);
+        return [...prevCart, { ...product, quantity }];
+      });
+    } else {
+      toast.error(
+        "Los productos de diferentes negocios no pueden mezclarse en el carrito."
+      );
     }
   };
 
@@ -88,7 +77,7 @@ export function CartProvider({ children }) {
     setCart((prevCart) => {
       const newCart = prevCart.filter((item) => item.id !== productId);
       if (newCart.length === 0) {
-        setNegocio(null);
+        setRestaurante(null);
       }
       return newCart;
     });
@@ -106,10 +95,11 @@ export function CartProvider({ children }) {
 
   const clearCart = () => {
     setCart([]);
-    setNegocio(null);
+    setRestaurante(null);
     if (isClient) {
       localStorage.removeItem("cart");
-      localStorage.removeItem("negocio");
+      localStorage.removeItem("restaurante");
+      toast.success("Carrito vaciado");
     }
   };
 
@@ -125,14 +115,14 @@ export function CartProvider({ children }) {
     <CartContext.Provider
       value={{
         cart,
-        negocio,
+        restaurante,
         addToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
         getCartTotal,
         getCartCount,
-        isClient
+        isClient,
       }}
     >
       {children}

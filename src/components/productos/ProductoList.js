@@ -7,8 +7,11 @@ import CategoriaFilter from "./CategoriaFilter";
 
 export default async function ProductoList({ negocioId, categoria = "todas" }) {
   let productos = await getProductos(negocioId);
+
   let categorias = [
-    ...new Set(productos.map((producto) => producto.categoria?.nombre.toLowerCase())),
+    ...new Set(
+      productos.map((producto) => producto.categoria?.nombre.toLowerCase())
+    ),
   ];
 
   if (productos == null) {

@@ -11,6 +11,7 @@ export default function Navigation() {
   const navItems = [
     { name: "Inicio", href: "/" },
     { name: "Restaurantes", href: "/restaurantes" },
+    { name: "Admin", href:"/dashboard/login" },
   ];
 
   return (

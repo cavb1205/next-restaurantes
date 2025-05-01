@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'; // Para redirigir después del logi
 
 
 // que contenga una función `login`
-import { login } from '@/services/authService'; // Importa la función de login de tu servicio API
+import { login } from '@/app/services/auth'; // Importa la función de login desde tu servicio de autenticación
 
 
 export default function LoginPage() {
@@ -74,7 +74,7 @@ export default function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100"> {/* Contenedor centrado */}
       <div className="w-full max-w-md px-8 py-6 mt-4 text-left bg-white shadow-lg rounded-lg"> {/* Tarjeta de login */}
-        <h3 className="text-2xl font-bold text-center text-gray-800">Inicio de Sesión de Propietario</h3>
+        <h3 className="text-2xl font-bold text-center text-secondary">Inicio de Sesión de Propietario</h3>
         <form onSubmit={handleSubmit} className="mt-4">
           {/* Mostrar errores si existen */}
           {error && (
@@ -109,7 +109,7 @@ export default function LoginPage() {
             />
           </div>
           {/* Botón de Submit */}
-          <div className="flex items-baseline justify-between">
+          <div className="flex items-baseline justify-center">
             <button
               type="submit"
               className="px-6 py-2 mt-4 text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-50"

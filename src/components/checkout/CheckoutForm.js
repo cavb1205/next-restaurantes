@@ -96,7 +96,7 @@ export default function CheckoutForm({ onSubmit }) {
         referencia: formData.referencia,
         metodo_pago: formData.metodoPago,
         envio: formData.metodoEnvio,
-        notasAdicionales: formData.notasAdicionales,
+        instrucciones_especiales: formData.notasAdicionales,
         restaurante: restaurante.id,
         items: cart.map((item) => ({
           producto: item.id,

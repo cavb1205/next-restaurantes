@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 // Asegúrate de que esta URL base apunte a tu backend de Django
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api`// <-- Cambia esto a la URL base de tu API
 
@@ -48,10 +50,14 @@ export async function authenticatedRequest(method, endpoint, data = null) {
   // Aquí es donde usualmente intentarías refrescar el token ANTES de redirigir al login.
   // Por simplicidad ahora, solo lanzaremos un error de autenticación.
   if (response.status === 401) {
+      localStorage.removeItem('accessToken'); // Limpiar el token expirado
+      localStorage.removeItem('refreshToken'); // Limpiar el refresh token si lo tienes
+      redirect('/dashboard/login'); // Redirigir al login
       const authError = new Error('Authentication expired or invalid.');
       authError.isAuthError = true;
       authError.response = response; // Adjuntar respuesta para inspección si es necesario
       throw authError; // Lanzar para que el componente redirija
+
   }
 
   // Manejar otros errores HTTP (400, 403, 404, 500, etc.)

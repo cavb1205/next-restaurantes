@@ -38,6 +38,8 @@ export default async function ProductoList({ negocioId, categoria = "todas" }) {
             >
               <div className="flex flex-col h-full w-full">
                 <div className="relative aspect-square w-full">
+                  {producto.imagen?
+
                   <Image
                     src={`${process.env.API_URL}${producto.imagen}`}
                     alt={`Imagen de ${producto.nombre}`}
@@ -46,6 +48,16 @@ export default async function ProductoList({ negocioId, categoria = "todas" }) {
                     className="object-cover transition-opacity opacity-90 group-hover:opacity-100"
                     loading="lazy"
                   />
+                  :
+                  <Image
+                    src="/placeholder.png"
+                    alt={`Imagen de ${producto.nombre}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-opacity opacity-90 group-hover:opacity-100"
+                    loading="lazy"
+                  />
+                  }
                 </div>
 
                 <div className="p-6 flex flex-col flex-1">

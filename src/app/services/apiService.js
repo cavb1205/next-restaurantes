@@ -141,3 +141,16 @@ export async function updateOrderStatus(restauranteSlug, orderId, newStatus) {
   // Asumimos que authenticatedRequest maneja el JSON.stringify y las cabeceras.
   return authenticatedRequest('PATCH', `/restaurantes/${restauranteSlug}/ordenes/${orderId}/estado/`, data);
 }
+
+
+export async function getRestaurantMenu(restauranteSlug) {
+  console.log(`[getRestaurantMenu] Starting for slug ${restauranteSlug}...`); // Log de inicio
+  if (!restauranteSlug) {
+       console.error("[getRestaurantMenu] Slug is null or undefined!"); // Log si falta slug
+      throw new Error("Restaurant slug is required to fetch menu.");
+  }
+  // Llama a authenticatedRequest con GET y el endpoint para el menú por slug
+   console.log(`[getRestaurantMenu] Calling authenticatedRequest GET /restaurantes/${restauranteSlug}/menu/`); // Log antes de llamar a authenticatedRequest
+  // **<<-- Asegúrate que este endpoint '/restaurantes/${restauranteSlug}/menu/' coincida exactamente con tu urls.py de Django -->>**
+  return authenticatedRequest('GET', `/restaurantes/${restauranteSlug}/menu/`);
+}

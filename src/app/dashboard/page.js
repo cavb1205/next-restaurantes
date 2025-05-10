@@ -416,7 +416,7 @@ export default function DashboardPage() {
                           Gestionar Menú
                       </Link>
                        <Link
-                          href={`/dashboard/restaurantes/${selectedRestaurantSlug}/metodos-pago`}
+                          href={`/dashboard/restaurantes/${selectedRestaurantSlug}/pagos`}
                           className="inline-block px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition duration-200"
                       >
                           Gestionar Métodos de Pago

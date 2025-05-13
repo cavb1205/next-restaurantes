@@ -428,7 +428,7 @@ export default function DashboardPage() {
                           Gestionar Envíos
                       </Link>
                        <Link
-                          href={`/dashboard/restaurantes/${selectedRestaurantSlug}/redes-sociales`}
+                          href={`/dashboard/restaurantes/${selectedRestaurantSlug}/redes`}
                            className="inline-block px-6 py-3 bg-pink-600 text-white font-semibold rounded-lg shadow-md hover:bg-pink-700 transition duration-200"
                       >
                           Gestionar Redes Sociales

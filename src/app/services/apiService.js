@@ -334,3 +334,136 @@ export async function deletePaymentMethod(restauranteSlug, methodId) {
   // DELETE usualmente retorna 204 No Content
   return authenticatedRequest('DELETE', endpoint);
 }
+
+
+
+// --- Nuevas funciones para Gestión de Envíos ---
+
+// Para obtener la lista de opciones de envío de un restaurante
+export async function getDeliveries(restauranteSlug) {
+  console.log(`[getDeliveries] Starting for slug ${restauranteSlug}...`); // Log de inicio
+  if (!restauranteSlug) {
+      console.error("[getDeliveries] Slug is null or undefined when fetching deliveries!");
+      throw new Error("Restaurant slug is required to fetch deliveries.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/envios/`; // <<-- Asegúrate que este endpoint coincida con tu urls.py
+  console.log(`[getDeliveries] Calling authenticatedRequest GET ${endpoint}`);
+  return authenticatedRequest('GET', endpoint);
+}
+
+// Para crear una nueva opción de envío
+export async function createDelivery(restauranteSlug, deliveryData) {
+   console.log(`[createDelivery] Starting for slug ${restauranteSlug} with data:`, deliveryData); // Log de inicio
+  if (!restauranteSlug || !deliveryData) {
+      console.error("[createDelivery] Missing slug or deliveryData!");
+      throw new Error("Restaurant slug and delivery data are required to create a delivery option.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/envios/`; // <<-- POST al mismo endpoint de lista
+  console.log(`[createDelivery] Calling authenticatedRequest POST ${endpoint} with data:`, deliveryData);
+  // Enviamos JSON para la mayoría de campos de Envio.
+  return authenticatedRequest('POST', endpoint, deliveryData); // authenticatedRequest manejará JSON.stringify
+}
+
+// Para obtener los detalles de una opción de envío específica
+export async function getDeliveryDetail(restauranteSlug, envioId) { // <-- Usar envioId consistentemente
+  console.log(`[getDeliveryDetail] Starting for slug ${restauranteSlug}, envioId ${envioId}...`); // Log de inicio
+  if (!restauranteSlug || !envioId) {
+       console.error("[getDeliveryDetail] Missing slug or envioId!");
+      throw new Error("Restaurant slug and Delivery ID are required to fetch delivery details.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/envios/${envioId}/`; // <<-- Endpoint de detalle
+  console.log(`[getDeliveryDetail] Calling authenticatedRequest GET ${endpoint}`);
+  return authenticatedRequest('GET', endpoint);
+}
+
+// Para actualizar una opción de envío (PATCH)
+export async function updateDelivery(restauranteSlug, envioId, deliveryData) { // <-- Usar envioId
+   console.log(`[updateDelivery] Starting for slug ${restauranteSlug}, envioId ${envioId} with data:`, deliveryData); // Log de inicio
+  if (!restauranteSlug || !envioId || !deliveryData) {
+      console.error("[updateDelivery] Missing slug, envioId, or deliveryData!");
+      throw new Error("Restaurant slug, Delivery ID, and delivery data are required to update a delivery option.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/envios/${envioId}/`; // <<-- Endpoint de detalle
+  console.log(`[updateDelivery] Calling authenticatedRequest PATCH ${endpoint} with data:`, deliveryData);
+  // Enviamos JSON (o FormData si hubiera archivos)
+  return authenticatedRequest('PATCH', endpoint, deliveryData);
+}
+
+// Para eliminar una opción de envío (DELETE)
+export async function deleteDelivery(restauranteSlug, envioId) { // <-- Usar envioId
+   console.log(`[deleteDelivery] Starting for slug ${restauranteSlug}, envioId ${envioId}...`); // Log de inicio
+  if (!restauranteSlug || !envioId) {
+       console.error("[deleteDelivery] Missing slug or envioId!");
+      throw new Error("Restaurant slug and Delivery ID are required to delete a delivery option.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/envios/${envioId}/`; // <<-- Endpoint de detalle
+  console.log(`[deleteDelivery] Calling authenticatedRequest DELETE ${endpoint}`);
+  // DELETE usualmente retorna 204 No Content
+  return authenticatedRequest('DELETE', endpoint);
+}
+
+
+// --- Nuevas funciones para Gestión de Redes Sociales ---
+
+// Para obtener la lista de enlaces de redes sociales de un restaurante
+export async function getSocialLinks(restauranteSlug) {
+  console.log(`[getSocialLinks] Starting for slug ${restauranteSlug}...`); // Log de inicio
+  if (!restauranteSlug) {
+      console.error("[getSocialLinks] Slug is null or undefined when fetching social links!");
+      throw new Error("Restaurant slug is required to fetch social links.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/redes-sociales/`; // <<-- Asegúrate que este endpoint coincida con tu urls.py
+  console.log(`[getSocialLinks] Calling authenticatedRequest GET ${endpoint}`);
+  return authenticatedRequest('GET', endpoint);
+}
+
+// Para crear un nuevo enlace de red social
+export async function createSocialLink(restauranteSlug, socialLinkData) {
+   console.log(`[createSocialLink] Starting for slug ${restauranteSlug} with data:`, socialLinkData); // Log de inicio
+  if (!restauranteSlug || !socialLinkData) {
+      console.error("[createSocialLink] Missing slug or socialLinkData!");
+      throw new Error("Restaurant slug and social link data are required to create a social link.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/redes-sociales/`; // <<-- POST al mismo endpoint de lista
+  console.log(`[createSocialLink] Calling authenticatedRequest POST ${endpoint} with data:`, socialLinkData);
+  // Enviamos JSON.
+  return authenticatedRequest('POST', endpoint, socialLinkData); // authenticatedRequest manejará JSON.stringify
+}
+
+// Para obtener los detalles de un enlace de red social específico
+export async function getSocialLinkDetail(restauranteSlug, redSocialId) { // <<-- Usar redSocialId consistentemente
+  console.log(`[getSocialLinkDetail] Starting for slug ${restauranteSlug}, redSocialId ${redSocialId}...`); // Log de inicio
+  if (!restauranteSlug || !redSocialId) {
+       console.error("[getSocialLinkDetail] Missing slug or redSocialId!");
+      throw new Error("Restaurant slug and Social Link ID are required to fetch social link details.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/redes-sociales/${redSocialId}/`; // <<-- Endpoint de detalle
+  console.log(`[getSocialLinkDetail] Calling authenticatedRequest GET ${endpoint}`);
+  return authenticatedRequest('GET', endpoint);
+}
+
+// Para actualizar un enlace de red social (PATCH)
+export async function updateSocialLink(restauranteSlug, redSocialId, socialLinkData) { // <<-- Usar redSocialId
+   console.log(`[updateSocialLink] Starting for slug ${restauranteSlug}, redSocialId ${redSocialId} with data:`, socialLinkData); // Log de inicio
+  if (!restauranteSlug || !redSocialId || !socialLinkData) {
+      console.error("[updateSocialLink] Missing slug, redSocialId, or socialLinkData!");
+      throw new Error("Restaurant slug, Social Link ID, and social link data are required to update a social link.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/redes-sociales/${redSocialId}/`; // <<-- Endpoint de detalle
+  console.log(`[updateSocialLink] Calling authenticatedRequest PATCH ${endpoint} with data:`, socialLinkData);
+  // Enviamos JSON.
+  return authenticatedRequest('PATCH', endpoint, socialLinkData);
+}
+
+// Para eliminar un enlace de red social (DELETE)
+export async function deleteSocialLink(restauranteSlug, redSocialId) { // <<-- Usar redSocialId
+   console.log(`[deleteSocialLink] Starting for slug ${restauranteSlug}, redSocialId ${redSocialId}...`); // Log de inicio
+  if (!restauranteSlug || !redSocialId) {
+       console.error("[deleteSocialLink] Missing slug or redSocialId!");
+      throw new Error("Restaurant slug and Social Link ID are required to delete a social link.");
+  }
+  const endpoint = `/restaurantes/${restauranteSlug}/redes-sociales/${redSocialId}/`; // <<-- Endpoint de detalle
+  console.log(`[deleteSocialLink] Calling authenticatedRequest DELETE ${endpoint}`);
+  // DELETE usualmente retorna 204 No Content
+  return authenticatedRequest('DELETE', endpoint);
+}
